@@ -97,8 +97,16 @@ namespace http
             }
 
             std::ostringstream ss;
-            ss << "------ Received Request from client ------";
-            log(ss.str());
+
+            if (*buffer == 'G')
+            {
+                log("------ Received GET Request from client ------");
+            }
+            else if (*buffer == 'P')
+            {
+                log("------ Received POST Request from client ------");
+                log(this->readPostRequestBody(buffer));
+            }
 
             sendResponse();
 
@@ -136,12 +144,42 @@ namespace http
 
         if (bytesSent == serverMessage.size())
         {
-            log("------ Server Response sent to client ------");
+            log("------ Server Response sent to client ------\n");
         }
         else
         {
-            log("Error sending response to client");
+            log("ERROR sending response to client\n");
         }
+    }
+
+    std::string TcpServer::readPostRequestBody(char *buffer)
+    {
+        // TODO: can this function be more efficient ?
+        // TODO: is it safe to assume the POST layout is always the same ?
+
+        while (true)
+        {
+            // detect empty line between the header and the content, e.g.
+            // POST / HTTP/1.1
+            // Host: 10.0.2.15:8080
+            // User-Agent: curl/7.81.0
+            // Accept: */ *
+            // Content - Length : 27 
+            // Content - Type : application/x-www-form-urlencoded\r\n
+            // \r\n
+            // param1 = value1 & param2 = value2
+
+            if ((*buffer == '\n') && (*(buffer + 1) == '\r')) [[unlikely]]
+            {
+                buffer += 3;
+
+                break;
+            }
+
+            ++buffer;
+        }
+
+        return std::string(buffer);
     }
 
 } // namespace http

@@ -32,6 +32,8 @@ namespace http
         void acceptConnection(int &new_socket);
         std::string buildResponse();
         void sendResponse();
+
+        std::string readPostRequestBody(char *buffer);
     };
 
 } // namespace http
