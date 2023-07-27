@@ -9,7 +9,13 @@
 
 namespace http
 {
+    struct EnableLog
+    {
+        bool console;
+        bool file;
+    };
 
+    template <EnableLog enableLog, bool enableSharedMemory>
     class TcpServer
     {
     public:
@@ -34,6 +40,9 @@ namespace http
         void sendResponse();
 
         std::string readPostRequestBody(char *buffer);
+
+        void log(const std::string &message);
+        void exitWithError(const std::string &errorMessage);
     };
 
 } // namespace http

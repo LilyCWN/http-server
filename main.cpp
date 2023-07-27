@@ -5,7 +5,7 @@ int main()
 {
     using namespace http;
 
-    TcpServer server = TcpServer("0.0.0.0", 8080);
+    TcpServer server = TcpServer<EnableLog{true, false}, false>("0.0.0.0", 8080);
     server.startListen();
 
     return 0;
