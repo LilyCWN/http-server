@@ -1,5 +1,4 @@
-#ifndef INCLUDED_HTTP_TCPSERVER_LINUX
-#define INCLUDED_HTTP_TCPSERVER_LINUX
+#pragma once
 
 #include <stdio.h>
 #include <sys/socket.h>
@@ -9,13 +8,7 @@
 
 namespace http
 {
-    struct EnableLog
-    {
-        bool console;
-        bool file;
-    };
-
-    template <EnableLog enableLog, bool enableSharedMemory>
+    template <bool enableConsoleLog, bool enableFileLog, bool enableSharedMemory>
     class TcpServer
     {
     public:
@@ -46,5 +39,3 @@ namespace http
     };
 
 } // namespace http
-
-#endif

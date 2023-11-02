@@ -10,8 +10,8 @@ const int BUFFER_SIZE = 30720;
 namespace http
 {
 
-    template <EnableLog enableLog, bool enableSharedMemory>
-    TcpServer<enableLog, enableSharedMemory>::TcpServer(std::string ip_address, int port) : m_ip_address(ip_address), m_port(port), m_socket(), m_new_socket(),
+    template <bool enableConsoleLog, bool enableFileLog, bool enableSharedMemory>
+    TcpServer<enableConsoleLog, enableFileLog, enableSharedMemory>::TcpServer(std::string ip_address, int port) : m_ip_address(ip_address), m_port(port), m_socket(), m_new_socket(),
                                                                                             m_incomingMessage(),
                                                                                             m_socketAddress(), m_socketAddress_len(sizeof(m_socketAddress))
     {
@@ -27,14 +27,14 @@ namespace http
         }
     }
 
-    template <EnableLog enableLog, bool enableSharedMemory>
-    TcpServer<enableLog, enableSharedMemory>::~TcpServer()
+    template <bool enableConsoleLog, bool enableFileLog, bool enableSharedMemory>
+    TcpServer<enableConsoleLog, enableFileLog, enableSharedMemory>::~TcpServer()
     {
         this->closeServer();
     }
 
-    template <EnableLog enableLog, bool enableSharedMemory>
-    int TcpServer<enableLog, enableSharedMemory>::startServer()
+    template <bool enableConsoleLog, bool enableFileLog, bool enableSharedMemory>
+    int TcpServer<enableConsoleLog, enableFileLog, enableSharedMemory>::startServer()
     {
         m_socket = socket(AF_INET, SOCK_STREAM, 0);
         if (m_socket < 0)
@@ -52,16 +52,16 @@ namespace http
         return 0;
     }
 
-    template <EnableLog enableLog, bool enableSharedMemory>
-    void TcpServer<enableLog, enableSharedMemory>::closeServer()
+    template <bool enableConsoleLog, bool enableFileLog, bool enableSharedMemory>
+    void TcpServer<enableConsoleLog, enableFileLog, enableSharedMemory>::closeServer()
     {
         close(m_socket);
         close(m_new_socket);
         exit(0);
     }
 
-    template <EnableLog enableLog, bool enableSharedMemory>
-    void TcpServer<enableLog, enableSharedMemory>::startListen()
+    template <bool enableConsoleLog, bool enableFileLog, bool enableSharedMemory>
+    void TcpServer<enableConsoleLog, enableFileLog, enableSharedMemory>::startListen()
     {
         if (listen(m_socket, 20) < 0)
         {
@@ -105,8 +105,8 @@ namespace http
         }
     }
 
-    template <EnableLog enableLog, bool enableSharedMemory>
-    void TcpServer<enableLog, enableSharedMemory>::acceptConnection(int &new_socket)
+    template <bool enableConsoleLog, bool enableFileLog, bool enableSharedMemory>
+    void TcpServer<enableConsoleLog, enableFileLog, enableSharedMemory>::acceptConnection(int &new_socket)
     {
         new_socket = accept(m_socket, (sockaddr *)&m_socketAddress, &m_socketAddress_len);
         if (new_socket < 0)
@@ -117,8 +117,8 @@ namespace http
         }
     }
 
-    template <EnableLog enableLog, bool enableSharedMemory>
-    std::string TcpServer<enableLog, enableSharedMemory>::buildResponse()
+    template <bool enableConsoleLog, bool enableFileLog, bool enableSharedMemory>
+    std::string TcpServer<enableConsoleLog, enableFileLog, enableSharedMemory>::buildResponse()
     {
         std::string htmlFile = "<!DOCTYPE html><html lang=\"en\"><body><h1> HOME </h1><p> Hello from your Server :)<\br>";
         htmlFile += getCurrentTime() + "</p></body></html>";
@@ -129,8 +129,8 @@ namespace http
         return ss.str();
     }
 
-    template <EnableLog enableLog, bool enableSharedMemory>
-    void TcpServer<enableLog, enableSharedMemory>::sendResponse()
+    template <bool enableConsoleLog, bool enableFileLog, bool enableSharedMemory>
+    void TcpServer<enableConsoleLog, enableFileLog, enableSharedMemory>::sendResponse()
     {
         std::string serverMessage = this->buildResponse();
 
@@ -146,8 +146,8 @@ namespace http
         }
     }
 
-    template <EnableLog enableLog, bool enableSharedMemory>
-    std::string TcpServer<enableLog, enableSharedMemory>::readPostRequestBody(char *buffer)
+    template <bool enableConsoleLog, bool enableFileLog, bool enableSharedMemory>
+    std::string TcpServer<enableConsoleLog, enableFileLog, enableSharedMemory>::readPostRequestBody(char *buffer)
     {
         // TODO: can this function be more efficient ?
         // TODO: is it safe to assume the POST layout is always the same ?
@@ -177,17 +177,17 @@ namespace http
         return std::string(buffer);
     }
 
-    template <EnableLog enableLog, bool enableSharedMemory>
-    void TcpServer<enableLog, enableSharedMemory>::log(const std::string &message)
+    template <bool enableConsoleLog, bool enableFileLog, bool enableSharedMemory>
+    void TcpServer<enableConsoleLog, enableFileLog, enableSharedMemory>::log(const std::string &message)
     {
-        if constexpr (enableLog.console)
+        if constexpr (enableConsoleLog)
         {
             std::cout << message << std::endl;
         }
     }
 
-    template <EnableLog enableLog, bool enableSharedMemory>
-    void TcpServer<enableLog, enableSharedMemory>::exitWithError(const std::string &errorMessage)
+    template <bool enableConsoleLog, bool enableFileLog, bool enableSharedMemory>
+    void TcpServer<enableConsoleLog, enableFileLog, enableSharedMemory>::exitWithError(const std::string &errorMessage)
     {
         this->log("ERROR: " + errorMessage);
         exit(1);
